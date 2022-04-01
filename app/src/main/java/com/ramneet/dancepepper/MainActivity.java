@@ -128,7 +128,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             mediaPlayer.start();
 
             //maybe prompt to user to press record tablet or find way to launch strait into recording
-            recordVideo();
+            //TODO:Uncomment or include call in sequence
+//            recordVideo();
 
         } else if (PhraseSetUtil.equals(matchedPhraseSet, phraseSetNo)) {
             Log.i(TAG, "Heard phrase set: no");

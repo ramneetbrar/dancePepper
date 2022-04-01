@@ -18,12 +18,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="286dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="60dp"
-        android:text="will this show"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="314dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
