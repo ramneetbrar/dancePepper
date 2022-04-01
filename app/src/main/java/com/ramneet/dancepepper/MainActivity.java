@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
@@ -69,18 +70,18 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         // Create a topic
         Topic topic = TopicBuilder.with(qiContext)
-                                .withResource(R.raw.greetings)
-                                .build();
+                .withResource(R.raw.greetings)
+                .build();
 
         // Create a QiChatbot
         QiChatbot qiChatbot = QiChatbotBuilder.with(qiContext)
-                                            .withTopic(topic) // use the previously created topic
-                                            .build();
+                .withTopic(topic) // use the previously created topic
+                .build();
 
         // Create a Chat action
         chat = ChatBuilder.with(qiContext)
-                        .withChatbot(qiChatbot)
-                        .build();
+                .withChatbot(qiChatbot)
+                .build();
         chat.addOnStartedListener(() -> Log.i(TAG, "Discussion started."));
 
         // Run the Chat action asynchronously.
@@ -175,7 +176,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     private void getCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
         }
     }
 
@@ -197,5 +198,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 Log.i("VIDEO_RECORD_TAG", "Recording has error");
 
             }
+    }
+
+    public void start_tensorflow(View v){
+        startActivity(new Intent(MainActivity.this, CameraActivity.class));
     }
 }

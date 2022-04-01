@@ -8,11 +8,11 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/open_activity_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="recordVideoButtonPressed"
-        android:text="Record Video"
+        android:onClick="start_tensorflow"
+        android:text="Launch Tensorflow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
