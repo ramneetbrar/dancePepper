@@ -32,9 +32,10 @@ import android.os.HandlerThread
 import android.util.Log
 import android.view.Surface
 import android.view.SurfaceView
+import com.ramneet.dancepepper.VisualizationUtils
+import com.ramneet.dancepepper.YuvToRgbConverter
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.tensorflow.lite.examples.poseestimation.VisualizationUtils
-import org.tensorflow.lite.examples.poseestimation.YuvToRgbConverter
+
 import org.tensorflow.lite.examples.poseestimation.data.Person
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNetMultiPose
 import org.tensorflow.lite.examples.poseestimation.ml.PoseClassifier

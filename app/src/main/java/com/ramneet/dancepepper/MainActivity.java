@@ -4,7 +4,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -201,6 +205,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     public void start_tensorflow(View v){
-        startActivity(new Intent(MainActivity.this, CameraActivity.class));
+        Intent camera_intent = new Intent(MainActivity.this, CameraActivity.class);
+        MainActivity.this.startActivity(camera_intent);
     }
 }
