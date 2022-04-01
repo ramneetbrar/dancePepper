@@ -129,4 +129,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusRefused(String reason) {
         // The robot focus is refused.
     }
+
+
 }
