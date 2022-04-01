@@ -19,7 +19,6 @@ package com.ramneet.dancepepper.ml
 import android.content.Context
 import android.graphics.*
 import android.os.SystemClock
-import com.google.android.gms.fitness.data.DataType
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.poseestimation.data.*
