@@ -12,9 +12,11 @@
 /Android/captures
 /Android/.externalNativeBuild
 /Android/.cxx
+/Android/.idea
+
 .DS_Store
-build
-captures
+/build
+/captures
 .externalNativeBuild
 .cxx
 /Classifier/pepper_data
