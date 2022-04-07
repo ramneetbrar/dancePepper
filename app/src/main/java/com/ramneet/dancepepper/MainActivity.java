@@ -6,14 +6,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -49,10 +47,24 @@ import java.net.URL;
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = "MainActivity";
     private Chat chat;
-    private String selectedPath;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        int permission = ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    MainActivity.this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -66,23 +78,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             Log.i("VIDEO_RECORD_TAG", "Camera is NOT detected");
 
         }
-    }
-
-    public String getPath(Uri uri) {
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        String document_id = cursor.getString(0);
-        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
-        cursor.close();
-
-        cursor = getContentResolver().query(
-                android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-        cursor.moveToFirst();
-        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
-        cursor.close();
-
-        return path;
     }
 
     @Override
@@ -221,44 +216,18 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             if (resultCode == RESULT_OK) {
                 videoPath = data.getData();
                 Log.i("VIDEO_RECORD_TAG", "Video is recording and saved at " + videoPath);
-//                String videoPathString = videoPath.toString();
-//                uploadFile( videoPathString);
-                selectedPath = getPath(videoPath);
-                Upload u = new Upload();
-                String msg = u.upLoad2Server(selectedPath);
+                String dir = Environment.getExternalStorageDirectory().getPath();
+                //String path = "/mnt/sdcard/Movies/VID_20220406_193443.mp4";
+                String path = "/storage/emulated/0/DCIM/Camera/VID_20220406_195135.mp4";
+                Log.i("UploadFile", "External storage directory:" + dir);
+                //String path = videoPath.toString();
+                uploadFile(path);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.i("VIDEO_RECORD_TAG", "Recording canceled");
             } else {
                 Log.i("VIDEO_RECORD_TAG", "Recording has error");
 
             }
-    }
-    private void uploadVideo() {
-        class UploadVideo extends AsyncTask<Void, Void, String> {
-
-            ProgressDialog uploading;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                uploading = ProgressDialog.show(MainActivity.this, "Uploading File", "Please wait...", false, false);
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                uploading.dismiss();
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                Upload u = new Upload();
-                String msg = u.upLoad2Server(selectedPath);
-                return msg;
-            }
-        }
-        UploadVideo uv = new UploadVideo();
-        uv.execute();
     }
 
 
@@ -322,16 +291,18 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 conn.setRequestProperty("ENCTYPE", "multipart/form-data");
                 conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
                 conn.setRequestProperty("uploaded_file", fileName);
-
+                System.out.println("Built request...");
                 dos = new DataOutputStream(conn.getOutputStream());
+                System.out.println("Created output stream...");
 
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
                 dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
                 dos.writeBytes(lineEnd);
+                System.out.println("Wrote bytes...");
 
                 // create a buffer of  maximum size
                 bytesAvailable = fileInputStream.available();
-
+                System.out.println("Creating buffer...");
                 bufferSize = Math.min(bytesAvailable, maxBufferSize);
                 buffer = new byte[bufferSize];
 
