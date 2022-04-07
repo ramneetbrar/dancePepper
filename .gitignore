@@ -13,7 +13,7 @@
 /captures
 /Android/.idea
 /Android/.gradle
-
+.idea
 .externalNativeBuild
 .cxx
 local.properties
