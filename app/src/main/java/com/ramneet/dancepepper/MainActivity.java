@@ -1,7 +1,6 @@
 package com.ramneet.dancepepper;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -41,14 +40,16 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+
+import okhttp3.MediaType;
+
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = "MainActivity";
+    private FileHandler fileHandler = new FileHandler();
     private Chat chat;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -218,9 +219,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         if (requestCode == VIDEO_RECORD_CODE)
             if (resultCode == RESULT_OK) {
                 videoPath = data.getData();
+                String mediaType = getContentResolver().getType(videoPath);
                 Log.i("VIDEO_RECORD_TAG", "Video is recording and saved at " + videoPath);
-                String pathStr = Environment.getExternalStorageDirectory().getPath();
-                File videoFile = retrieveFileFromDevice(videoPath);
+                //String pathStr = Environment.getExternalStorageDirectory().getPath();
+                File[] videoFiles = fileHandler.retrieveFilesFromDevice();
                 //String path = "/mnt/sdcard/Movies/VID_20220406_193443.mp4";
                // String path = "/storage/emulated/0/DCIM/Camera/VID_20220406_195135.mp4";
                // Log.i("UploadFile", "External storage directory:" + dir);
@@ -232,74 +234,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 Log.i("VIDEO_RECORD_TAG", "Recording has error");
 
             }
-    }
-
-    protected File retrieveFileFromDevice(Uri videoPath){
-        Log.i("RetrieveVideo", "Attempting to locate video file at " + videoPath);
-        String apparentRootPath = Environment.getExternalStorageDirectory().getPath();
-        String apparentLocationOfFiles = "Not found. A folder called /DCIM/Camera could not be located.";
-        File [] discoveredFiles = new File[0];
-        File simulatedDirectory = Environment.getExternalStorageDirectory();
-        FilenameFilter DCIMFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.equals("DCIM");
-            }
-        };
-        FilenameFilter cameraFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.equals("Camera");
-            }
-        };
-
-        File[] matchingDCIM = simulatedDirectory.listFiles(DCIMFilter);
-        Log.i("RetrieveVideo", "Discovered the following files matching name 'DCIM':");
-        for (File file : matchingDCIM){
-            Log.i("RetrieveVideo", "Filename:" + file.getName());
-        }
-
-        if(foundOneMatchingFile(matchingDCIM)){
-            File DCIMFolder = matchingDCIM[0];
-            File[] matchingCamera = DCIMFolder.listFiles(cameraFilter);
-            Log.i("RetrieveVideo", "Discovered the following files matching name 'Camera':");
-            for (File file : matchingCamera){
-                Log.i("RetrieveVideo", "Filename:" + file.getName());
-            }
-            if(foundOneMatchingFile(matchingCamera)){
-                File cameraFolder = matchingCamera[0];
-                apparentLocationOfFiles = cameraFolder.getPath();
-                discoveredFiles = cameraFolder.listFiles();
-                Log.i("RetrieveVideo", "Discovered the following files:");
-                for (File file : discoveredFiles){
-                    Log.i("RetrieveVideo", "Filename:" + file.getName());
-                }
-            } else {
-                Log.e("RetrieveFile", "No 'Camera' folder was able to located under the root path \"" + apparentRootPath + "/DCIM/\"");
-
-            }
-        } else {
-            Log.e("RetrieveFile", "No 'DCIM' folder was able to located under the root path \"" + apparentRootPath + "\"");
-        }
-
-        Log.i("RetrieveVideo", "The external storage directory was reported as: \"" + apparentLocationOfFiles + "\"");
-        Log.i("RetrieveVideo", "\"" + apparentLocationOfFiles + "\" contained " + discoveredFiles.length + " files.");
-
-        return null;
-    }
-
-    private boolean foundOneMatchingFile(File[] folder){
-        return folder.length == 1;
-    }
-
-    protected String getFileNameFromPath(String path){
-        String fileName = path;
-        return fileName;
-    }
-
-    protected String getPathWithoutFileNameFromPath(String path){
-        String basePath = path;
-        return basePath;
     }
 
     public int uploadFile(String sourceFileUri) {
