@@ -11,6 +11,9 @@
 .DS_Store
 /build
 /captures
+/Android/.idea
+/Android/.gradle
+
 .externalNativeBuild
 .cxx
 local.properties
