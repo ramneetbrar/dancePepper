@@ -223,6 +223,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 Log.i("VIDEO_RECORD_TAG", "Video is recording and saved at " + videoPath);
                 //String pathStr = Environment.getExternalStorageDirectory().getPath();
                 File[] videoFiles = fileHandler.retrieveFilesFromDevice();
+                if(videoFiles.length == 0){
+                    Log.e("RetrieveVideo", "No videos could be found on the device.");
+                } else {
+                    File mostRecentVideo = videoFiles[videoFiles.length - 1];
+                    fileHandler.uploadFile(mostRecentVideo, mediaType);
+                }
                 //String path = "/mnt/sdcard/Movies/VID_20220406_193443.mp4";
                // String path = "/storage/emulated/0/DCIM/Camera/VID_20220406_195135.mp4";
                // Log.i("UploadFile", "External storage directory:" + dir);

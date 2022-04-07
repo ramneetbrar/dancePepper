@@ -77,11 +77,15 @@ public class FileHandler {
     //From tutorial here: https://futurestud.io/tutorials/retrofit-2-how-to-upload-files-to-server
     //And here: https://futurestud.io/tutorials/retrofit-2-creating-a-sustainable-android-client
     public void uploadFile(File file, String type){
+        Log.i("UploadFile", "Creating file upload service...");
         FileUploadService service = ServiceGenerator.createService(FileUploadService.class);
         RequestBody requestFile = RequestBody.create(MediaType.parse(type), file);
+        Log.i("UploadFile", "Found a file of type " + MediaType.parse(type));
         MultipartBody.Part body = MultipartBody.Part.createFormData("Video File", file.getName(), requestFile);
+        Log.i("UploadFile", "Added file to Request Body.");
         String descriptionStr = "A video from the tablet camera";
         RequestBody description = RequestBody.create(MultipartBody.FORM, descriptionStr);
+        Log.i("UploadFile", "Sending request...");
         Call<ResponseBody> call = service.upload(description, body);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
