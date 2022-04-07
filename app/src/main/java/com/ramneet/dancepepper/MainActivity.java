@@ -6,10 +6,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -46,6 +49,7 @@ import java.net.URL;
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = "MainActivity";
     private Chat chat;
+    private String selectedPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,23 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             Log.i("VIDEO_RECORD_TAG", "Camera is NOT detected");
 
         }
+    }
+
+    public String getPath(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        String document_id = cursor.getString(0);
+        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+        cursor.close();
+
+        cursor = getContentResolver().query(
+                android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
+        cursor.close();
+
+        return path;
     }
 
     @Override
@@ -200,14 +221,44 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             if (resultCode == RESULT_OK) {
                 videoPath = data.getData();
                 Log.i("VIDEO_RECORD_TAG", "Video is recording and saved at " + videoPath);
-                String videoPathString = videoPath.toString();
-                //uploadFile("/" + videoPathString);
+//                String videoPathString = videoPath.toString();
+//                uploadFile( videoPathString);
+                selectedPath = getPath(videoPath);
+                Upload u = new Upload();
+                String msg = u.upLoad2Server(selectedPath);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.i("VIDEO_RECORD_TAG", "Recording canceled");
             } else {
                 Log.i("VIDEO_RECORD_TAG", "Recording has error");
 
             }
+    }
+    private void uploadVideo() {
+        class UploadVideo extends AsyncTask<Void, Void, String> {
+
+            ProgressDialog uploading;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                uploading = ProgressDialog.show(MainActivity.this, "Uploading File", "Please wait...", false, false);
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                uploading.dismiss();
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                Upload u = new Upload();
+                String msg = u.upLoad2Server(selectedPath);
+                return msg;
+            }
+        }
+        UploadVideo uv = new UploadVideo();
+        uv.execute();
     }
 
 
