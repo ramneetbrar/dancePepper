@@ -1,7 +1,6 @@
 package com.ramneet.dancepepper;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -40,12 +39,17 @@ import com.aldebaran.qi.sdk.util.PhraseSetUtil;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import okhttp3.MediaType;
+
+
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = "MainActivity";
+    private FileHandler fileHandler = new FileHandler();
     private Chat chat;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -215,13 +219,22 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         if (requestCode == VIDEO_RECORD_CODE)
             if (resultCode == RESULT_OK) {
                 videoPath = data.getData();
+                String mediaType = getContentResolver().getType(videoPath);
                 Log.i("VIDEO_RECORD_TAG", "Video is recording and saved at " + videoPath);
-                String dir = Environment.getExternalStorageDirectory().getPath();
+                //String pathStr = Environment.getExternalStorageDirectory().getPath();
+                File[] videoFiles = fileHandler.retrieveFilesFromDevice();
+                if(videoFiles.length == 0){
+                    Log.e("RetrieveVideo", "No videos could be found on the device.");
+                } else {
+                    File mostRecentVideo = videoFiles[videoFiles.length - 1];
+                    //path = mostRecentVideo.getPath();
+                    fileHandler.uploadFile(mostRecentVideo, mediaType);
+                }
                 //String path = "/mnt/sdcard/Movies/VID_20220406_193443.mp4";
-                String path = "/storage/emulated/0/DCIM/Camera/VID_20220406_195135.mp4";
-                Log.i("UploadFile", "External storage directory:" + dir);
+               // String path = "/storage/emulated/0/DCIM/Camera/VID_20220406_195135.mp4";
+               // Log.i("UploadFile", "External storage directory:" + dir);
                 //String path = videoPath.toString();
-                uploadFile(path);
+                //uploadFile(path);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.i("VIDEO_RECORD_TAG", "Recording canceled");
             } else {
@@ -229,8 +242,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
             }
     }
-
-
 
     public int uploadFile(String sourceFileUri) {
         Log.e("uploadFile", "Full string:" + sourceFileUri);
