@@ -3,8 +3,15 @@ package com.ramneet.dancepepper;
 import android.os.Environment;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -118,6 +125,17 @@ public class FileHandler {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.v("UploadFile", "File successfully uploaded");
+                try {
+                    JSONObject json = new JSONObject(response.body().string());
+                    Log.v("UploadFile", "Response:" + json);
+
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
+
+//                Log.v("UploadFile", "Response:" + json);
+                Log.v("UploadFile", "Response:" );
+
             }
 
             @Override
