@@ -227,6 +227,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                     Log.e("RetrieveVideo", "No videos could be found on the device.");
                 } else {
                     File mostRecentVideo = videoFiles[videoFiles.length - 1];
+                    //path = mostRecentVideo.getPath();
                     fileHandler.uploadFile(mostRecentVideo, mediaType);
                 }
                 //String path = "/mnt/sdcard/Movies/VID_20220406_193443.mp4";
