@@ -14,27 +14,26 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.AnimateBuilder;
+import com.aldebaran.qi.sdk.builder.AnimationBuilder;
 import com.aldebaran.qi.sdk.builder.ChatBuilder;
-import com.aldebaran.qi.sdk.builder.ListenBuilder;
-import com.aldebaran.qi.sdk.builder.PhraseSetBuilder;
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
-import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.actuation.Animate;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
-import com.aldebaran.qi.sdk.object.conversation.Listen;
-import com.aldebaran.qi.sdk.object.conversation.ListenResult;
-import com.aldebaran.qi.sdk.object.conversation.PhraseSet;
+import com.aldebaran.qi.sdk.object.conversation.Chatbot;
+import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
+import com.aldebaran.qi.sdk.object.conversation.QiChatVariable;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
-import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
-import com.aldebaran.qi.sdk.util.PhraseSetUtil;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -43,6 +42,10 @@ import java.io.FilenameFilter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 
@@ -51,6 +54,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private static final String TAG = "MainActivity";
     private FileHandler fileHandler = new FileHandler();
     private Chat chat;
+    private QiChatbot qiChatbot;
+    private QiChatVariable variable;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -97,75 +102,39 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         // Create a topic
         Topic topic = TopicBuilder.with(qiContext)
-                                .withResource(R.raw.greetings)
-                                .build();
+                .withResource(R.raw.greetings)
+                .build();
 
         // Create a QiChatbot
-        QiChatbot qiChatbot = QiChatbotBuilder.with(qiContext)
-                                            .withTopic(topic) // use the previously created topic
-                                            .build();
+        qiChatbot = QiChatbotBuilder.with(qiContext)
+                .withTopic(topic) // use the previously created topic
+                .build();
+
+        Map<String, QiChatExecutor> executors = new HashMap<>();
+        executors.put("clappingExecuter", new animationExecutor(qiContext));
+
+        qiChatbot.setExecutors(executors);
+        List<Chatbot> chatbots = new ArrayList<>();
+        chatbots.add(qiChatbot);
 
         // Create a Chat action
         chat = ChatBuilder.with(qiContext)
                         .withChatbot(qiChatbot)
                         .build();
-        chat.addOnStartedListener(() -> Log.i(TAG, "Discussion started."));
+        chat.addOnStartedListener(() -> {
+            Log.i(TAG, "Discussion started.");
+            Log.i(TAG, "getSaying: " + chat.getSaying());
+        });
 
         // Run the Chat action asynchronously.
         Future<Void> chatFuture = chat.async().run();
         chatFuture.thenConsume(future -> {
             if (future.hasError()) {
                 Log.e(TAG, "Discussion finished with error.", future.getError());
+            } else {
+                Log.i(TAG, "Discussion finished successfully");
             }
         });
-
-        // Create a new say action.
-        Say say = SayBuilder.with(qiContext)
-                .withText("Want to dance?")
-                .build();
-        say.run();
-
-
-        // Create the PhraseSet for yes and no.
-        PhraseSet phraseSetYes = PhraseSetBuilder.with(qiContext)
-                .withTexts("yes", "yeah", "OK", "alright", "let's do this") // Add the phrases Pepper will listen to.
-                .build();
-
-        PhraseSet phraseSetNo = PhraseSetBuilder.with(qiContext)
-                .withTexts("no", "nah", "Sorry", "I can't")
-                .build();
-
-        // Create a new listen action.
-        Listen listen = ListenBuilder.with(qiContext)
-                .withPhraseSets(phraseSetYes, phraseSetNo) // Set the PhraseSets to listen to.
-                .build();
-
-        // Run the listen action and get the result.
-        ListenResult listenResult = listen.run();
-        Log.i(TAG, "Heard phrase: " + listenResult.getHeardPhrase().getText());
-        // Identify the matched phrase set.
-        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-        if (PhraseSetUtil.equals(matchedPhraseSet, phraseSetYes)) {
-            Log.i(TAG, "Heard phrase set: yes");
-
-            say = SayBuilder.with(qiContext)
-                    .withText("Okay, show me your moves.")
-                    .build();
-            say.run();
-            MediaPlayer mediaPlayer = MediaPlayer.create(qiContext, R.raw.ladyfingers);
-            mediaPlayer.start();
-
-            //maybe prompt to user to press record tablet or find way to launch strait into recording
-            //TODO:Uncomment or include call in sequence
-//            recordVideo();
-
-        } else if (PhraseSetUtil.equals(matchedPhraseSet, phraseSetNo)) {
-            Log.i(TAG, "Heard phrase set: no");
-            say = SayBuilder.with(qiContext)
-                    .withText("Your loss.")
-                    .build();
-            say.run();
-        }
     }
 
     @Override
