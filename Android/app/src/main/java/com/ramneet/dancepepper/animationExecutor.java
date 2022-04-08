@@ -9,6 +9,7 @@ import com.aldebaran.qi.sdk.object.actuation.Animate;
 import com.aldebaran.qi.sdk.object.actuation.Animation;
 import com.aldebaran.qi.sdk.object.conversation.BaseQiChatExecutor;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class animationExecutor extends BaseQiChatExecutor {
@@ -21,7 +22,7 @@ public class animationExecutor extends BaseQiChatExecutor {
 
     @Override
     public void runWith(List<String> params) {
-        animate(qiContext);
+        animate(qiContext, "boogie"); // get motion name from camera
     }
 
     @Override
@@ -29,16 +30,25 @@ public class animationExecutor extends BaseQiChatExecutor {
         Log.i("AnimationExecutor", "QiChatExecutor stopped");
     }
 
-    private void animate(QiContext qiContext) {
-        // Create an animation.
-        Animation animation = AnimationBuilder.with(qiContext) // Create the builder with the context.
-                .withResources(R.raw.clapping_b001) // Set the animation resource.
-                .build(); // Build the animation.
+    private void animate(QiContext qiContext, String motion) {
+        try {
+            Class res = R.raw.class;
+            Field field = res.getField(motion);
+            int drawableId = field.getInt(null);
 
-        // Create an animate action.
-        Animate animate = AnimateBuilder.with(qiContext) // Create the builder with the context.
-                .withAnimation(animation) // Set the animation.
-                .build(); // Build the animate action.
-        animate.run();
+            // Create an animation.
+            Animation animation = AnimationBuilder.with(qiContext)
+                    .withResources(drawableId)
+                    .build();
+
+            // Create an animate action.
+            Animate animate = AnimateBuilder.with(qiContext)
+                    .withAnimation(animation)
+                    .build();
+            animate.run();
+        }
+        catch (Exception e) {
+            Log.e("animationExecutor", "Failure to get drawable id.", e);
+        }
     }
 }
