@@ -127,15 +127,13 @@ public class FileHandler {
                 Log.v("UploadFile", "File successfully uploaded");
                 try {
                     JSONObject json = new JSONObject(response.body().string());
-                    Log.v("UploadFile", "Response:" + json);
+                    String prediction = json.getString("prediction");
+                    Log.v("UploadFile", "json: " + json);
+                    Log.v("UploadFile", "prediction: " + prediction);
 
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
-
-//                Log.v("UploadFile", "Response:" + json);
-                Log.v("UploadFile", "Response:" );
-
             }
 
             @Override
