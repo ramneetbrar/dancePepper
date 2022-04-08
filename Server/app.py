@@ -44,9 +44,11 @@ def upload_video():
         flash('Video successfully uploaded and displayed below')
         output_video_file_path = f'{prediction_folder}/{filename}.mp4'
 
-        prediction = predict_on_live_video(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename), output_video_file_path, 25, model)
+        prediction, probability = predict_on_live_video(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename), output_video_file_path, 25, model)
+        print(probability)
+        prediction_dict = {'prediction': prediction, 'probability': probability}
         response = app.response_class(
-            response= json.dumps(prediction),
+            response= json.dumps(prediction_dict),
             status=200,
             mimetype='application/json'
         )
@@ -67,6 +69,7 @@ def predict_on_live_video(video_file_path, output_file_path, window_size, model)
     # Reading the Video File using the VideoCapture Object
     video_reader = cv2.VideoCapture(video_file_path)
     predicted_class_name = ''
+    probability = ''
 
     while True:
 
@@ -99,12 +102,14 @@ def predict_on_live_video(video_file_path, output_file_path, window_size, model)
             # Converting the predicted probabilities into labels by returning the index of the maximum value.
             predicted_label = np.argmax(predicted_labels_probabilities_averaged)
 
+            # get the probability for the predicted label
+            probability = predicted_labels_probabilities_averaged[predicted_label]
             # Accessing The Class Name using predicted label.
             predicted_class_name = classes_list[predicted_label]
 
     # Closing the VideoCapture object and releasing all resources held by them.
     video_reader.release()
-    return predicted_class_name
+    return predicted_class_name, probability
 
 
 if __name__ == '__main__':
