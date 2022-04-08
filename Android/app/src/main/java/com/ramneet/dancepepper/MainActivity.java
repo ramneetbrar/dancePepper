@@ -118,54 +118,48 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 Log.e(TAG, "Discussion finished with error.", future.getError());
             }
         });
-
-        // Create a new say action.
-        Say say = SayBuilder.with(qiContext)
-                .withText("Want to dance?")
-                .build();
-        say.run();
-
-
-        // Create the PhraseSet for yes and no.
-        PhraseSet phraseSetYes = PhraseSetBuilder.with(qiContext)
-                .withTexts("yes", "yeah", "OK", "alright", "let's do this") // Add the phrases Pepper will listen to.
-                .build();
-
-        PhraseSet phraseSetNo = PhraseSetBuilder.with(qiContext)
-                .withTexts("no", "nah", "Sorry", "I can't")
-                .build();
-
-        // Create a new listen action.
-        Listen listen = ListenBuilder.with(qiContext)
-                .withPhraseSets(phraseSetYes, phraseSetNo) // Set the PhraseSets to listen to.
-                .build();
-
-        // Run the listen action and get the result.
-        ListenResult listenResult = listen.run();
-        Log.i(TAG, "Heard phrase: " + listenResult.getHeardPhrase().getText());
-        // Identify the matched phrase set.
-        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
-        if (PhraseSetUtil.equals(matchedPhraseSet, phraseSetYes)) {
-            Log.i(TAG, "Heard phrase set: yes");
-
-            say = SayBuilder.with(qiContext)
-                    .withText("Okay, show me your moves.")
-                    .build();
-            say.run();
-            MediaPlayer mediaPlayer = MediaPlayer.create(qiContext, R.raw.ladyfingers);
-            mediaPlayer.start();
-
-            //maybe prompt to user to press record tablet or find way to launch strait into recording
-            //TODO:Uncomment or include call in sequence
-//            recordVideo();
-
-        } else if (PhraseSetUtil.equals(matchedPhraseSet, phraseSetNo)) {
-            Log.i(TAG, "Heard phrase set: no");
-            say = SayBuilder.with(qiContext)
-                    .withText("Your loss.")
-                    .build();
-            say.run();
-        }
+//
+//
+//        // Create the PhraseSet for yes and no.
+//        PhraseSet phraseSetYes = PhraseSetBuilder.with(qiContext)
+//                .withTexts("yes", "yeah", "OK", "alright", "let's do this") // Add the phrases Pepper will listen to.
+//                .build();
+//
+//        PhraseSet phraseSetNo = PhraseSetBuilder.with(qiContext)
+//                .withTexts("no", "nah", "Sorry", "I can't")
+//                .build();
+//
+//        // Create a new listen action.
+//        Listen listen = ListenBuilder.with(qiContext)
+//                .withPhraseSets(phraseSetYes, phraseSetNo) // Set the PhraseSets to listen to.
+//                .build();
+//
+//        // Run the listen action and get the result.
+//        ListenResult listenResult = listen.run();
+//        Log.i(TAG, "Heard phrase: " + listenResult.getHeardPhrase().getText());
+//        // Identify the matched phrase set.
+//        PhraseSet matchedPhraseSet = listenResult.getMatchedPhraseSet();
+//        if (PhraseSetUtil.equals(matchedPhraseSet, phraseSetYes)) {
+//            Log.i(TAG, "Heard phrase set: yes");
+//
+//            say = SayBuilder.with(qiContext)
+//                    .withText("Okay, show me your moves.")
+//                    .build();
+//            say.run();
+//            MediaPlayer mediaPlayer = MediaPlayer.create(qiContext, R.raw.ladyfingers);
+//            mediaPlayer.start();
+//
+//            //maybe prompt to user to press record tablet or find way to launch strait into recording
+//            //TODO:Uncomment or include call in sequence
+////            recordVideo();
+//
+//        } else if (PhraseSetUtil.equals(matchedPhraseSet, phraseSetNo)) {
+//            Log.i(TAG, "Heard phrase set: no");
+//            say = SayBuilder.with(qiContext)
+//                    .withText("Your loss.")
+//                    .build();
+//            say.run();
+//        }
     }
 
     @Override
