@@ -28,6 +28,7 @@ import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.actuation.Animate;
+import com.aldebaran.qi.sdk.object.conversation.BaseQiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.Chatbot;
 import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
@@ -111,7 +112,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
 
         Map<String, QiChatExecutor> executors = new HashMap<>();
-        executors.put("animateExecuter", new animationExecutor(qiContext, "animate"));
+//        executors.put("animateExecuter", new animationExecutor(qiContext, "animate"));
+        executors.put("recordVideo", new recordVideoExecutor(qiContext));
         executors.put("discoExecuter", new animationExecutor(qiContext, "disco"));
         executors.put("guitarExecuter", new animationExecutor(qiContext, "guitar"));
         executors.put("drumrollExecuter", new animationExecutor(qiContext, "drumroll"));
@@ -181,11 +183,38 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
+    // TODO: Figure out how to pass context through intent stuff all the way to animate call (onActivityResult)
     private void recordVideo() {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 4);
         startActivityForResult(intent, VIDEO_RECORD_CODE);
     }
+
+    public class recordVideoExecutor extends BaseQiChatExecutor {
+        private QiContext qiContext;
+        protected recordVideoExecutor(QiContext context) {
+            super(context);
+            this.qiContext = context;
+        }
+
+        @Override
+        public void runWith(List<String> params) {
+            recordVideo();
+            Log.i("RecordVideoExecutor", "back from record video.");
+        }
+
+        @Override
+        public void stop() {
+            Log.i("RecordVideoExecutor", "QiChatExecutor stopped");
+        }
+    }
+
+    interface PredictionCallback {
+        void success(String prediction);
+        void failure(Throwable t);
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -202,7 +231,23 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 } else {
                     File mostRecentVideo = videoFiles[videoFiles.length - 1];
                     //path = mostRecentVideo.getPath();
-                    fileHandler.uploadFile(mostRecentVideo, mediaType);
+//                    fileHandler.uploadFile(mostRecentVideo, mediaType);
+
+                    fileHandler.uploadFile(mostRecentVideo, mediaType, new PredictionCallback() {
+                        @Override
+                        public void success(String prediction) {
+                            // Use result
+                            Log.i("BackFromCamera", "About to animate prediction: " + prediction);
+//                            animationExecutor anim = new animationExecutor(qiContext, prediction);
+                        }
+
+                        @Override
+                        public void failure(Throwable t) {
+                            // Display error
+                            Log.i("BackFromCamera", "failed");
+                        }
+
+                    });
                 }
                 //String path = "/mnt/sdcard/Movies/VID_20220406_193443.mp4";
                // String path = "/storage/emulated/0/DCIM/Camera/VID_20220406_195135.mp4";

@@ -110,7 +110,7 @@ public class FileHandler {
 //        });
 //    }
 //
-    public void uploadFile(File file, String type){
+    public void uploadFile(File file, String type, MainActivity.PredictionCallback predictionCallback){
         Log.i("UploadFile", "Creating file upload service...");
         FileUploadService service = ServiceGenerator.createService(FileUploadService.class);
         RequestBody requestFile = RequestBody.create(MediaType.parse(type), file);
@@ -130,6 +130,7 @@ public class FileHandler {
                     String prediction = json.getString("prediction");
                     Log.v("UploadFile", "json: " + json);
                     Log.v("UploadFile", "prediction: " + prediction);
+                    predictionCallback.success(prediction);
 
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();

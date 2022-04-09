@@ -9,7 +9,8 @@ concept: (pepperDance) ["dance for me"]
 # Replying to speech
 # format (human input) robot answer
 u:(~hello) ~hello
-u:(~dance) show me your moves ^execute(animateExecuter)
+# TODO: change from animateExecutor to record video here
+u:(~dance) show me your moves ^execute(recordVideo)
 u:(~pepperDisco) let's disco ^execute(discoExecuter)
 u:(~pepperGuitar) air guitar ^execute(guitarExecuter)
 u:(~pepperDrumroll) drumroll please ^execute(drumrollExecuter)
