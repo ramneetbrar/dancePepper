@@ -2,8 +2,15 @@ topic: ~greetings()
 # Defining extra concepts out of words or group of words
 concept:(hello) [hello hi hey "good morning" greetings]
 concept:(dance) ["want to dance" "let's dance" "can we dance"]
-
+concept:(pepperDisco) ["pepper can you disco" "time to disco" disco]
+concept: (pepperGuitar) ["pepper can you air guitar" "air guitar" guitar]
+concept: (pepperDrumroll) ["pepper drum roll" "play the drums" drums]
+concept: (pepperDance) ["dance for me"]
 # Replying to speech
 # format (human input) robot answer
 u:(~hello) ~hello
-u:(~dance) show me your moves ^execute(clappingExecuter)
+u:(~dance) show me your moves ^execute(animateExecuter)
+u:(~pepperDisco) let's disco ^execute(discoExecuter)
+u:(~pepperGuitar) air guitar ^execute(guitarExecuter)
+u:(~pepperDrumroll) drumroll please ^execute(drumrollExecuter)
+u: (~pepperDance) i'm a dancing queen ^execute(danceExecuter)

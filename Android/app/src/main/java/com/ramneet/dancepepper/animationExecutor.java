@@ -14,15 +14,20 @@ import java.util.List;
 
 public class animationExecutor extends BaseQiChatExecutor {
     private final QiContext qiContext;
+    private String animationType;
 
-    protected animationExecutor(QiContext context) {
+    protected animationExecutor(QiContext context, String animationType) {
         super(context);
         this.qiContext = context;
+        this.animationType = animationType;
     }
 
     @Override
     public void runWith(List<String> params) {
-        animate(qiContext, "boogie"); // get motion name from camera
+        if (animationType.equalsIgnoreCase("animate")){
+            animationType = "boogie"; // replace with motion name from camera
+        }
+        animate(qiContext, animationType);
     }
 
     @Override

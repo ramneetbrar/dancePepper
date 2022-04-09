@@ -111,7 +111,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 .build();
 
         Map<String, QiChatExecutor> executors = new HashMap<>();
-        executors.put("clappingExecuter", new animationExecutor(qiContext));
+        executors.put("animateExecuter", new animationExecutor(qiContext, "animate"));
+        executors.put("discoExecuter", new animationExecutor(qiContext, "disco"));
+        executors.put("guitarExecuter", new animationExecutor(qiContext, "guitar"));
+        executors.put("drumrollExecuter", new animationExecutor(qiContext, "drumroll"));
+        executors.put("danceExecuter", new animationExecutor(qiContext, "dance"));
 
         qiChatbot.setExecutors(executors);
         List<Chatbot> chatbots = new ArrayList<>();
