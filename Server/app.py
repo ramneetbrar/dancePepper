@@ -15,12 +15,13 @@ UPLOAD_FOLDER = './static/uploads'
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 basedir = os.path.abspath(os.path.dirname(__file__))
-classes_list = ["clap", "wave"]
+classes_list = ["clap", "wave", "kisses", "mind_blown", 'boogie']
+model_output_size = len(classes_list)
 image_height, image_width = 64, 64
 
 window_size = 25
 prediction_folder = './static/predictions'
-model_path = os.path.join(basedir, './Classifier', 'Model___Date_Time_2022_04_06__18_21_54___Loss_0.6936672329902649___Accuracy_0.25.h5')
+model_path = os.path.join(basedir, './Classifier', 'Model___Date_Time_2022_04_08__16_20_12___Loss_1.6099380254745483___Accuracy_0.20000000298023224.h5')
 model = tf.keras.models.load_model(model_path)
 @app.route('/')
 def upload_form():
@@ -39,13 +40,14 @@ def upload_video():
     else:
         filename = secure_filename(file.filename)
         # Fix file not found: https: // stackoverflow.com / questions / 37901716 / flask - uploads - ioerror - errno - 2 - no - such - file - or -directory
-        file.save(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename))
+        file_path = os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
         # print('upload_video filename: ' + filename)
         flash('Video successfully uploaded and displayed below')
         output_video_file_path = f'{prediction_folder}/{filename}.mp4'
 
-        prediction, probability = predict_on_live_video(os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename), output_video_file_path, 25, model)
-        print(probability)
+        prediction, probability = make_average_predictions(file_path, 50)
+        # print(probability)
         prediction_dict = {'prediction': prediction, 'probability': probability}
         response = app.response_class(
             response= json.dumps(prediction_dict),
@@ -61,23 +63,25 @@ def display_video(filename):
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
-# From juypiter notbook couldnt import, modified for server call
-def predict_on_live_video(video_file_path, output_file_path, window_size, model):
-    # Initialize a Deque Object with a fixed size which will be used to implement moving/rolling average functionality.
-    predicted_labels_probabilities_deque = deque(maxlen=window_size)
+def make_average_predictions(video_file_path, predictions_frames_count):
+    # Initializing the Numpy array which will store Prediction Probabilities
+    predicted_labels_probabilities_np = np.zeros((predictions_frames_count, model_output_size), dtype=float)
 
     # Reading the Video File using the VideoCapture Object
     video_reader = cv2.VideoCapture(video_file_path)
-    predicted_class_name = ''
-    probability = ''
 
-    while True:
+    # Getting The Total Frames present in the video
+    video_frames_count = int(video_reader.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    # Calculating The Number of Frames to skip Before reading a frame
+    skip_frames_window = video_frames_count // predictions_frames_count
+
+    for frame_counter in range(predictions_frames_count):
+        # Setting Frame Position
+        video_reader.set(cv2.CAP_PROP_POS_FRAMES, frame_counter * skip_frames_window)
 
         # Reading The Frame
-        status, frame = video_reader.read()
-
-        if not status:
-            break
+        _, frame = video_reader.read()
 
         # Resize the Frame to fixed Dimensions
         resized_frame = cv2.resize(frame, (image_height, image_width))
@@ -89,27 +93,32 @@ def predict_on_live_video(video_file_path, output_file_path, window_size, model)
         predicted_labels_probabilities = model.predict(np.expand_dims(normalized_frame, axis=0))[0]
 
         # Appending predicted label probabilities to the deque object
-        predicted_labels_probabilities_deque.append(predicted_labels_probabilities)
+        predicted_labels_probabilities_np[frame_counter] = predicted_labels_probabilities
 
-        # Assuring that the Deque is completely filled before starting the averaging process
-        if len(predicted_labels_probabilities_deque) == window_size:
-            # Converting Predicted Labels Probabilities Deque into Numpy array
-            predicted_labels_probabilities_np = np.array(predicted_labels_probabilities_deque)
+    # Calculating Average of Predicted Labels Probabilities Column Wise
+    predicted_labels_probabilities_averaged = predicted_labels_probabilities_np.mean(axis=0)
 
-            # Calculating Average of Predicted Labels Probabilities Column Wise
-            predicted_labels_probabilities_averaged = predicted_labels_probabilities_np.mean(axis=0)
+    # Sorting the Averaged Predicted Labels Probabilities
+    predicted_labels_probabilities_averaged_sorted_indexes = np.argsort(predicted_labels_probabilities_averaged)[::-1]
 
-            # Converting the predicted probabilities into labels by returning the index of the maximum value.
-            predicted_label = np.argmax(predicted_labels_probabilities_averaged)
+    # Iterating Over All Averaged Predicted Label Probabilities
+    for predicted_label in predicted_labels_probabilities_averaged_sorted_indexes:
+        # Accessing The Class Name using predicted label.
+        predicted_class_name = classes_list[predicted_label]
 
-            # get the probability for the predicted label
-            probability = predicted_labels_probabilities_averaged[predicted_label]
-            # Accessing The Class Name using predicted label.
-            predicted_class_name = classes_list[predicted_label]
+        # Accessing The Averaged Probability using predicted label.
+        predicted_probability = predicted_labels_probabilities_averaged[predicted_label]
 
-    # Closing the VideoCapture object and releasing all resources held by them.
+        print(f"CLASS NAME: {predicted_class_name}   AVERAGED PROBABILITY: {(predicted_probability * 100):.2}")
+
+    # Closing the VideoCapture Object and releasing all resources held by it.
+    max_index = len(predicted_labels_probabilities_averaged_sorted_indexes) - 1
+    max_prediction_index = predicted_labels_probabilities_averaged_sorted_indexes[max_index]
+    max_prediction_label = classes_list[max_prediction_index]
+    max_prediction_probability = predicted_labels_probabilities_averaged[max_index]
+    # print("class" + max_prediction_label, "probs" + max_prediction_probability )
     video_reader.release()
-    return predicted_class_name, probability
+    return [max_prediction_label, max_prediction_probability]
 
 
 if __name__ == '__main__':
