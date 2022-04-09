@@ -183,6 +183,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     private void recordVideo() {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 5);
         startActivityForResult(intent, VIDEO_RECORD_CODE);
     }
 
