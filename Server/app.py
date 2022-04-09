@@ -15,13 +15,13 @@ UPLOAD_FOLDER = './static/uploads'
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 basedir = os.path.abspath(os.path.dirname(__file__))
-classes_list = ["clap", "wave", "kisses", "mind_blown", 'boogie']
+classes_list = ["clap", "wave", "boogie", 'kisses', 'mind_blown']
 model_output_size = len(classes_list)
 image_height, image_width = 64, 64
 
-window_size = 25
+window_size = 10
 prediction_folder = './static/predictions'
-model_path = os.path.join(basedir, './Classifier', 'Model___Date_Time_2022_04_08__16_20_12___Loss_1.6099380254745483___Accuracy_0.20000000298023224.h5')
+model_path = os.path.join(basedir, './Classifier', 'Model___Date_Time_2022_04_09__02_08_12___Loss_1.6582568883895874___Accuracy_0.6299999952316284.h5')
 model = tf.keras.models.load_model(model_path)
 @app.route('/')
 def upload_form():
@@ -46,7 +46,7 @@ def upload_video():
         flash('Video successfully uploaded and displayed below')
         output_video_file_path = f'{prediction_folder}/{filename}.mp4'
 
-        prediction, probability = make_average_predictions(file_path, 50)
+        prediction, probability = make_average_predictions(file_path, 10)
         # print(probability)
         prediction_dict = {'prediction': prediction, 'probability': probability}
         response = app.response_class(
@@ -109,17 +109,16 @@ def make_average_predictions(video_file_path, predictions_frames_count):
         # Accessing The Averaged Probability using predicted label.
         predicted_probability = predicted_labels_probabilities_averaged[predicted_label]
 
-        print(f"CLASS NAME: {predicted_class_name}   AVERAGED PROBABILITY: {(predicted_probability * 100):.2}")
+        print(f"CLASS NAME: {predicted_class_name}   AVERAGED PROBABILITY: {(predicted_probability * 100)}")
 
     # Closing the VideoCapture Object and releasing all resources held by it.
-    max_index = len(predicted_labels_probabilities_averaged_sorted_indexes) - 1
-    max_prediction_index = predicted_labels_probabilities_averaged_sorted_indexes[max_index]
-    max_prediction_label = classes_list[max_prediction_index]
+    max_index = predicted_labels_probabilities_averaged_sorted_indexes[0]
+    max_prediction_label = classes_list[max_index]
     max_prediction_probability = predicted_labels_probabilities_averaged[max_index]
-    # print("class" + max_prediction_label, "probs" + max_prediction_probability )
     video_reader.release()
     return [max_prediction_label, max_prediction_probability]
 
+# From juypiter notbook couldnt import, modified for server call
 
 if __name__ == '__main__':
     app.run()
