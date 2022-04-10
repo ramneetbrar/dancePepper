@@ -11,10 +11,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.Toast;
 
 import com.aldebaran.qi.Future;
@@ -28,6 +28,7 @@ import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.actuation.Animate;
+import com.aldebaran.qi.sdk.object.actuation.Animation;
 import com.aldebaran.qi.sdk.object.conversation.BaseQiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.Chatbot;
@@ -62,6 +63,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    private String gPredictionStr = "";
+    private QiContext qiContextG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +103,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         // The robot focus is gained.
-
+        qiContextG = qiContext;
         // Create a topic
         Topic topic = TopicBuilder.with(qiContext)
                 .withResource(R.raw.greetings)
@@ -201,6 +204,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         public void runWith(List<String> params) {
             recordVideo();
             Log.i("RecordVideoExecutor", "back from record video.");
+            animationExecutor anim = new animationExecutor(qiContext, "animate");
+            anim.run(gPredictionStr);
+            Log.i("RecordVideoExecutor", "after executing animation.");
         }
 
         @Override
@@ -210,11 +216,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     interface PredictionCallback {
-        void success(String prediction);
+        void success(String prediction, String probability);
         void failure(Throwable t);
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -235,10 +239,14 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
                     fileHandler.uploadFile(mostRecentVideo, mediaType, new PredictionCallback() {
                         @Override
-                        public void success(String prediction) {
+                        public void success(String prediction, String probability) {
                             // Use result
-                            Log.i("BackFromCamera", "About to animate prediction: " + prediction);
-//                            animationExecutor anim = new animationExecutor(qiContext, prediction);
+                            Log.i("BackFromCamera", "About to animate prediction: " + prediction + " with probability: " + probability);
+                            gPredictionStr = prediction;
+                            Log.i("BackFromCamera", "updated animation");
+                            animationExecutor anim = new animationExecutor(qiContextG, prediction);
+                            anim.run(prediction);
+                            Log.i("BackFromCamera", "after executing animation");
                         }
 
                         @Override

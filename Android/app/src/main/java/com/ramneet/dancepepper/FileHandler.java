@@ -1,5 +1,6 @@
 package com.ramneet.dancepepper;
 
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -21,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FileHandler {
+public class FileHandler{
 
     public FileHandler() {
     }
@@ -128,9 +129,10 @@ public class FileHandler {
                 try {
                     JSONObject json = new JSONObject(response.body().string());
                     String prediction = json.getString("prediction");
+                    String probability = json.getString("probability");
                     Log.v("UploadFile", "json: " + json);
                     Log.v("UploadFile", "prediction: " + prediction);
-                    predictionCallback.success(prediction);
+                    predictionCallback.success(prediction, probability);
 
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
