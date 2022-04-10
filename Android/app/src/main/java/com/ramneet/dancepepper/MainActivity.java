@@ -8,6 +8,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,6 +40,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -159,7 +161,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private Uri videoPath;
     private String videoPathString = "";
 
-    public void recordVideoButtonPressed(View view) {
+    public void recordVideoButtonPressed(View view) throws IOException {
         recordVideo();
     }
 
@@ -177,11 +179,40 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
-    private void recordVideo() {
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 4);
-        startActivityForResult(intent, VIDEO_RECORD_CODE);
+    private void recordVideo() throws IOException {
+        File videoFile = null;
+        File dir = Environment.getExternalStorageDirectory();
+        try {
+            videoFile = File.createTempFile("video", ".3gp", dir);
+        } catch (IOException e) {
+            Log.e(TAG, "external storage access error");
+            return;
+        }
+        //releaseCamera();
+        MediaRecorder recorder = new MediaRecorder();
+        recorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+        recorder.setOutputFile(videoFile.getAbsolutePath());
+        recorder.setMaxDuration(7000);
+        recorder.prepare();
+        recorder.start();
+        //recorder.stop();
+        recorder.reset();
+        recorder.release();
+
+//        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+//        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 4);
+//        startActivityForResult(intent, VIDEO_RECORD_CODE);
     }
+
+//    private void releaseCamera() {
+//        if (myCamera != null) {
+//            // Release the camera object so other classes can use it.
+//            myCamera.release();
+//            myCamera = null;
+//        }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
