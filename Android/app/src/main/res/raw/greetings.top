@@ -1,7 +1,8 @@
 topic: ~greetings()
 # Defining extra concepts out of words or group of words
 concept:(hello) [hello hi hey "good morning" greetings]
-concept:(dance) ["want to dance" "let's dance" "can we dance"]
+concept:(dance) ["want to dance" "let's dance" "can we dance" "Can you do this"]
+
 concept:(pepperDisco) ["pepper can you disco" "time to disco" disco]
 concept: (pepperGuitar) ["pepper can you air guitar" "air guitar" guitar]
 concept: (pepperDrumroll) ["pepper drum roll" "play the drums" drums]

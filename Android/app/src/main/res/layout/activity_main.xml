@@ -11,10 +11,27 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#03A9F4"
         android:onClick="recordVideoButtonPressed"
         android:text="Record Video"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.848"
+        app:rippleColor="#00BCD4"
+        app:strokeColor="#00BCD4" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="781dp"
+        android:layout_height="269dp"
+        android:text="Pepper can perform actions like waving, clapping, and having her mind blown! Press ‘Record’ or say ‘Can you do this?’ to have Pepper imitate you! \n \n Once you’ve asked Pepper to imitate you, use the Camera controls on the tablet to record your video."
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
