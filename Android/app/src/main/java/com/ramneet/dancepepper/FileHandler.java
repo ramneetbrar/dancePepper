@@ -1,5 +1,6 @@
 package com.ramneet.dancepepper;
 
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -21,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FileHandler {
+public class FileHandler{
 
     public FileHandler() {
     }
@@ -84,33 +85,7 @@ public class FileHandler {
 
     //From tutorial here: https://futurestud.io/tutorials/retrofit-2-how-to-upload-files-to-server
     //And here: https://futurestud.io/tutorials/retrofit-2-creating-a-sustainable-android-client
-
-//    public void uploadFile(File file, MediaType type){
-//        Log.i("UploadFile", "Creating file upload service...");
-//        FileUploadService service = ServiceGenerator.createService(FileUploadService.class);
-//        RequestBody requestFile = RequestBody.create(type, file);
-//        Log.i("UploadFile", "Found a file of type " + type);
-//        Log.i("UploadFile", "The response body: " + requestFile);
-//        //MultipartBody.Part body = MultipartBody.Part.createFormData("Video File", file.getName(), requestFile);
-//        Log.i("UploadFile", "Added file to Request Body.");
-//        //String descriptionStr = "A video from the tablet camera";
-//        //RequestBody description = RequestBody.create(MultipartBody.FORM, descriptionStr);
-//        Log.i("UploadFile", "Sending request...");
-//        Call<ResponseBody> call = service.upload(requestFile);
-//        call.enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                Log.v("UploadFile", "File successfully uploaded");
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                Log.e("UploadFile", t.getMessage());
-//            }
-//        });
-//    }
-//
-    public void uploadFile(File file, String type){
+    public void uploadFile(File file, String type, MainActivity.PredictionCallback predictionCallback){
         Log.i("UploadFile", "Creating file upload service...");
         FileUploadService service = ServiceGenerator.createService(FileUploadService.class);
         RequestBody requestFile = RequestBody.create(MediaType.parse(type), file);
@@ -128,8 +103,10 @@ public class FileHandler {
                 try {
                     JSONObject json = new JSONObject(response.body().string());
                     String prediction = json.getString("prediction");
+                    String probability = json.getString("probability");
                     Log.v("UploadFile", "json: " + json);
                     Log.v("UploadFile", "prediction: " + prediction);
+                    predictionCallback.success(prediction, probability);
 
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
