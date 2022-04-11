@@ -85,32 +85,6 @@ public class FileHandler{
 
     //From tutorial here: https://futurestud.io/tutorials/retrofit-2-how-to-upload-files-to-server
     //And here: https://futurestud.io/tutorials/retrofit-2-creating-a-sustainable-android-client
-
-//    public void uploadFile(File file, MediaType type){
-//        Log.i("UploadFile", "Creating file upload service...");
-//        FileUploadService service = ServiceGenerator.createService(FileUploadService.class);
-//        RequestBody requestFile = RequestBody.create(type, file);
-//        Log.i("UploadFile", "Found a file of type " + type);
-//        Log.i("UploadFile", "The response body: " + requestFile);
-//        //MultipartBody.Part body = MultipartBody.Part.createFormData("Video File", file.getName(), requestFile);
-//        Log.i("UploadFile", "Added file to Request Body.");
-//        //String descriptionStr = "A video from the tablet camera";
-//        //RequestBody description = RequestBody.create(MultipartBody.FORM, descriptionStr);
-//        Log.i("UploadFile", "Sending request...");
-//        Call<ResponseBody> call = service.upload(requestFile);
-//        call.enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                Log.v("UploadFile", "File successfully uploaded");
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                Log.e("UploadFile", t.getMessage());
-//            }
-//        });
-//    }
-//
     public void uploadFile(File file, String type, MainActivity.PredictionCallback predictionCallback){
         Log.i("UploadFile", "Creating file upload service...");
         FileUploadService service = ServiceGenerator.createService(FileUploadService.class);

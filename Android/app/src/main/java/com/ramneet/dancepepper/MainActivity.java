@@ -25,6 +25,7 @@ import com.aldebaran.qi.sdk.builder.AnimateBuilder;
 import com.aldebaran.qi.sdk.builder.AnimationBuilder;
 import com.aldebaran.qi.sdk.builder.ChatBuilder;
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.actuation.Animate;
@@ -32,15 +33,18 @@ import com.aldebaran.qi.sdk.object.actuation.Animation;
 import com.aldebaran.qi.sdk.object.conversation.BaseQiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.Chatbot;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.QiChatVariable;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -228,15 +232,31 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 videoPath = data.getData();
                 String mediaType = getContentResolver().getType(videoPath);
                 Log.i("VIDEO_RECORD_TAG", "Video is recording and saved at " + videoPath);
-                //String pathStr = Environment.getExternalStorageDirectory().getPath();
                 File[] videoFiles = fileHandler.retrieveFilesFromDevice();
                 if(videoFiles.length == 0){
                     Log.e("RetrieveVideo", "No videos could be found on the device.");
                 } else {
                     File mostRecentVideo = videoFiles[videoFiles.length - 1];
-                    //path = mostRecentVideo.getPath();
-//                    fileHandler.uploadFile(mostRecentVideo, mediaType);
-
+//                    Tried making it say thinking
+//                    Thread thinkingThread = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try  {
+//                                //Your code goes here
+//                                Log.i("Thinking", "before say");
+//                                Phrase phrase = new Phrase("Let me think ...");
+//                                Say say = SayBuilder.with(qiContextG)
+//                                        .withPhrase(phrase)
+//                                        .build();
+//
+//                                say.run();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//
+//                    thinkingThread.start();
                     fileHandler.uploadFile(mostRecentVideo, mediaType, new PredictionCallback() {
                         @Override
                         public void success(String prediction, String probability) {
@@ -257,169 +277,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
                     });
                 }
-                //String path = "/mnt/sdcard/Movies/VID_20220406_193443.mp4";
-               // String path = "/storage/emulated/0/DCIM/Camera/VID_20220406_195135.mp4";
-               // Log.i("UploadFile", "External storage directory:" + dir);
-                //String path = videoPath.toString();
-                //uploadFile(path);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.i("VIDEO_RECORD_TAG", "Recording canceled");
             } else {
                 Log.i("VIDEO_RECORD_TAG", "Recording has error");
 
             }
-    }
 
-    public int uploadFile(String sourceFileUri) {
-        Log.e("uploadFile", "Full string:" + sourceFileUri);
-        int lastSlashIndex = sourceFileUri.lastIndexOf("/");
-        //Log.i("uploadFile", "Last index:" + lastSlashIndex);
-        String uploadFileName = sourceFileUri.substring(lastSlashIndex + 1);
-        String uploadFilePath = sourceFileUri.substring(0, lastSlashIndex);
-        Log.i("uploadFile", "Filename:" + uploadFileName);
-        Log.i("uploadFile", "Filename:" + uploadFilePath);
-
-        int serverResponseCode = 0;
-        String upLoadServerUri = "http://207.23.170.43:5000/";
-        String fileName = sourceFileUri;
-
-        HttpURLConnection conn = null;
-        DataOutputStream dos = null;
-        String lineEnd = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
-        int bytesRead, bytesAvailable, bufferSize;
-        byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-        File sourceFile = new File(sourceFileUri);
-
-        Log.e("uploadFile", "File name: " + sourceFile.getName());
-        Log.e("uploadFile", "File String:" + sourceFile);
-        Log.e("uploadFile", "File status:" + sourceFile.isFile());
-        if (!sourceFile.isFile()) {
-
-            //dialog.dismiss();
-
-            Log.e("uploadFile", "Source File does not exist:"
-                    + uploadFilePath + "" + uploadFileName);
-
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    //messageText.setText("Source File not exist :"
-                           // + uploadFilePath + "" + uploadFileName);
-                }
-            });
-
-            return 0;
-
-        } else {
-            try {
-
-                // open a URL connection to the Servlet
-                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                URL url = new URL(upLoadServerUri);
-
-                // Open a HTTP  connection to  the URL
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true); // Allow Inputs
-                conn.setDoOutput(true); // Allow Outputs
-                conn.setUseCaches(false); // Don't use a Cached Copy
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                conn.setRequestProperty("uploaded_file", fileName);
-                System.out.println("Built request...");
-                dos = new DataOutputStream(conn.getOutputStream());
-                System.out.println("Created output stream...");
-
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
-                dos.writeBytes(lineEnd);
-                System.out.println("Wrote bytes...");
-
-                // create a buffer of  maximum size
-                bytesAvailable = fileInputStream.available();
-                System.out.println("Creating buffer...");
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                buffer = new byte[bufferSize];
-
-                // read file and write it into form...
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                while (bytesRead > 0) {
-
-                    dos.write(buffer, 0, bufferSize);
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                }
-
-                // send multipart form data necesssary after file data...
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                // Responses from the server (code and message)
-                serverResponseCode = conn.getResponseCode();
-                String serverResponseMessage = conn.getResponseMessage();
-
-                Log.i("uploadFile", "HTTP Response is : "
-                        + serverResponseMessage + ": " + serverResponseCode);
-
-                if (serverResponseCode == 200) {
-
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-
-                            String msg = "File Upload Completed.\n\n See uploaded file here : \n\n"
-                                    + " http://www.androidexample.com/media/uploads/"
-                                    + uploadFileName;
-
-                            //messageText.setText(msg);
-                            Toast.makeText(MainActivity.this, "File Upload Complete.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                //close the streams //
-                fileInputStream.close();
-                dos.flush();
-                dos.close();
-
-            } catch (MalformedURLException ex) {
-
-                //dialog.dismiss();
-                ex.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        //messageText.setText("MalformedURLException Exception : check script url.");
-                        Toast.makeText(MainActivity.this, "MalformedURLException",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-            } catch (Exception e) {
-
-                //dialog.dismiss();
-                e.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        //messageText.setText("Got Exception : see logcat ");
-                        Toast.makeText(MainActivity.this, "Got Exception : see logcat ",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-                Log.e("Upload file to server Exception", "Exception : "
-                        + e.getMessage(), e);
-            }
-            //dialog.dismiss();
-            return serverResponseCode;
-
-        } // End else block
     }
 }
