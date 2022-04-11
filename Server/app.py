@@ -7,6 +7,7 @@ import numpy as np
 from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 import tensorflow as tf
+
 # Server based on: https://roytuts.com/upload-and-play-video-using-flask/
 
 
@@ -15,14 +16,19 @@ UPLOAD_FOLDER = './static/uploads'
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 basedir = os.path.abspath(os.path.dirname(__file__))
-classes_list = ["clap", "wave", "boogie", 'kisses', 'mind_blown']
+classes_list = ["clap", "wave_left", 'mind_blown']
+old_classes_list = ["clap", "wave", "boogie", 'kisses', 'mind_blown']
+
 model_output_size = len(classes_list)
 image_height, image_width = 64, 64
 
 window_size = 10
 prediction_folder = './static/predictions'
-model_path = os.path.join(basedir, './Classifier', 'Model___Date_Time_2022_04_09__02_08_12___Loss_1.6582568883895874___Accuracy_0.6299999952316284.h5')
+model_path = os.path.join(basedir, './Classifier',
+                          'Model___Date_Time_2022_04_10__16_38_28___Loss_0.4024992287158966___Accuracy_0.9200000166893005.h5')
 model = tf.keras.models.load_model(model_path)
+
+
 @app.route('/')
 def upload_form():
     return render_template('upload.html')
@@ -44,13 +50,16 @@ def upload_video():
         file.save(file_path)
         # print('upload_video filename: ' + filename)
         flash('Video successfully uploaded and displayed below')
-        output_video_file_path = f'{prediction_folder}/{filename}.mp4'
 
-        prediction, probability = make_average_predictions(file_path, 10)
+        prediction, probability = make_average_predictions(file_path, 50)
+        print(prediction, probability)
+
+
+        # make_average_predictions(file_path, 50)
         # print(probability)
         prediction_dict = {'prediction': prediction, 'probability': probability}
         response = app.response_class(
-            response= json.dumps(prediction_dict),
+            response=json.dumps(prediction_dict),
             status=200,
             mimetype='application/json'
         )
@@ -95,6 +104,8 @@ def make_average_predictions(video_file_path, predictions_frames_count):
         # Appending predicted label probabilities to the deque object
         predicted_labels_probabilities_np[frame_counter] = predicted_labels_probabilities
 
+        # print(predicted_labels_probabilities_np[frame_counter])
+
     # Calculating Average of Predicted Labels Probabilities Column Wise
     predicted_labels_probabilities_averaged = predicted_labels_probabilities_np.mean(axis=0)
 
@@ -102,6 +113,7 @@ def make_average_predictions(video_file_path, predictions_frames_count):
     predicted_labels_probabilities_averaged_sorted_indexes = np.argsort(predicted_labels_probabilities_averaged)[::-1]
 
     # Iterating Over All Averaged Predicted Label Probabilities
+    predictions = {}
     for predicted_label in predicted_labels_probabilities_averaged_sorted_indexes:
         # Accessing The Class Name using predicted label.
         predicted_class_name = classes_list[predicted_label]
@@ -110,6 +122,8 @@ def make_average_predictions(video_file_path, predictions_frames_count):
         predicted_probability = predicted_labels_probabilities_averaged[predicted_label]
 
         print(f"CLASS NAME: {predicted_class_name}   AVERAGED PROBABILITY: {(predicted_probability * 100)}")
+        predictions[predicted_class_name] = predicted_probability * 100
+
 
     # Closing the VideoCapture Object and releasing all resources held by it.
     max_index = predicted_labels_probabilities_averaged_sorted_indexes[0]
@@ -118,7 +132,6 @@ def make_average_predictions(video_file_path, predictions_frames_count):
     video_reader.release()
     return [max_prediction_label, max_prediction_probability]
 
-# From juypiter notbook couldnt import, modified for server call
 
 if __name__ == '__main__':
     app.run()
