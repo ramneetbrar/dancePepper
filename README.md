@@ -84,7 +84,7 @@ Dance pepper is a Human-Computer Interaction project. It was built to mimic huma
 ### Description
 
 The Android folder contains our Pepper app. The FileHandler, FileuploadService and ServiceGenerator where used to send the video file to our server. The AnimationExecutor runs the animation acording to what the server sends back.The MainActivity starts our Pepper discusion and opens the video recorder. To run the Pepper applications follow this [guide](https://developer.softbankrobotics.com/pepper-qisdk/getting-started
-). Then navigate to the ServiceGenerator.java which can be found by the following path Android/app/src/main/java/com/ramneet/dancepepper/FileHandler.java. Then navigate to line 9 and you should see the following:
+). Then navigate to the ServiceGenerator.java which can be found by the following path Android/app/src/main/java/com/ramneet/dancepepper/ServiceGenerator.java. Then navigate to line 9 and you should see the following:
 ```
     private static final String BASE_URL = "http://10.0.0.5:5000/";
 ```
