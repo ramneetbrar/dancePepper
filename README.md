@@ -84,7 +84,7 @@ Dance pepper is a Human-Computer Interaction project. It was built to mimic huma
 ### Description
 
 The Android folder contains our pepper app. To run pepper applications follow this [guide](https://developer.softbankrobotics.com/pepper-qisdk/getting-started
-). In the FileHandler.java which can be found by the following path Android/app/src/main/java/com/ramneet/dancepepper/FileHandler.java. Then navigate to line 9 and you should see the following:
+). Then navigate to the FileHandler.java which can be found by the following path Android/app/src/main/java/com/ramneet/dancepepper/FileHandler.java. Then navigate to line 9 and you should see the following:
 ```
     private static final String BASE_URL = "http://10.0.0.5:5000/";
 ```
