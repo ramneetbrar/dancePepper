@@ -75,7 +75,6 @@ Dance pepper is a Human-Computer Interaction project. It was built to mimic huma
     │   ├── pepper_data.zip
     │   ├── readMe.md
     │   ├── requirements.txt
-    │   └── test_classify
     ├── Pipfile
     ├── app.py
     ├── static
