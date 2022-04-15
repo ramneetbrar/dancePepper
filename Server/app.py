@@ -1,7 +1,5 @@
 import json
 import os
-import urllib.request
-from collections import deque
 import cv2
 import numpy as np
 from flask import Flask, flash, request, redirect, url_for, render_template
@@ -16,18 +14,15 @@ UPLOAD_FOLDER = './static/uploads'
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 basedir = os.path.abspath(os.path.dirname(__file__))
-classes_list = ["clap", "wave_left", 'mind_blown']
-old_classes_list = ["clap", "wave", "boogie", 'kisses', 'mind_blown']
 
+classes_list = ["clap", "wave_left", 'mind_blown']
 model_output_size = len(classes_list)
 image_height, image_width = 64, 64
-
-window_size = 10
 prediction_folder = './static/predictions'
 model_path = os.path.join(basedir, './Classifier',
                           'Model___Date_Time_2022_04_10__16_38_28___Loss_0.4024992287158966___Accuracy_0.9200000166893005.h5')
-model = tf.keras.models.load_model(model_path)
 
+model = tf.keras.models.load_model(model_path)
 
 @app.route('/')
 def upload_form():
@@ -48,15 +43,11 @@ def upload_video():
         # Fix file not found: https: // stackoverflow.com / questions / 37901716 / flask - uploads - ioerror - errno - 2 - no - such - file - or -directory
         file_path = os.path.join(basedir, app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-        # print('upload_video filename: ' + filename)
         flash('Video successfully uploaded and displayed below')
 
-        prediction, probability = make_average_predictions(file_path, 50)
+        prediction, probability = make_average_predictions(file_path, 31)
         print(prediction, probability)
 
-
-        # make_average_predictions(file_path, 50)
-        # print(probability)
         prediction_dict = {'prediction': prediction, 'probability': probability}
         response = app.response_class(
             response=json.dumps(prediction_dict),
@@ -68,10 +59,9 @@ def upload_video():
 
 @app.route('/display/<filename>')
 def display_video(filename):
-    # print('display_video filename: ' + filename)
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
-
+# This is from the jupyter notebook in the classifier folder
 def make_average_predictions(video_file_path, predictions_frames_count):
     # Initializing the Numpy array which will store Prediction Probabilities
     predicted_labels_probabilities_np = np.zeros((predictions_frames_count, model_output_size), dtype=float)
@@ -129,6 +119,7 @@ def make_average_predictions(video_file_path, predictions_frames_count):
     max_index = predicted_labels_probabilities_averaged_sorted_indexes[0]
     max_prediction_label = classes_list[max_index]
     max_prediction_probability = predicted_labels_probabilities_averaged[max_index]
+
     video_reader.release()
     return [max_prediction_label, max_prediction_probability]
 
