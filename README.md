@@ -114,7 +114,7 @@ Overcoming the many challenges involved in creating and using AI and robot libra
 
 ### Server
 Python 3.9.5
-
+```
 tensorflow==2.4.1
 numpy==1.18.5
 opencv-contrib-python==4.1.2.30
@@ -125,3 +125,4 @@ pafy==0.5.5
 moviepy==0.2.3.5
 flask==2.2.1
 werkzeug==2.1.1
+```
