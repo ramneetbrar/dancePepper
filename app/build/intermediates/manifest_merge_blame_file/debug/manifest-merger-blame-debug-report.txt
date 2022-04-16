@@ -1,0 +1,111 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.ramneet.dancepepper"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="23"
+8-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="28" />
+9-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml
+10    <!-- <uses-permission -->
+11    <!-- android:name="android.permission.WRITE_EXTERNAL_STORAGE" -->
+12    <!-- android:maxSdkVersion="28" -->
+13    <!-- tools:ignore="ScopedStorage" /> -->
+14    <uses-feature
+14-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:9:5-11:35
+15        android:name="android.hardware.camera"
+15-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:10:9-47
+16        android:required="true" />
+16-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:11:9-32
+17
+18    <uses-permission android:name="android.permission.CAMERA" />
+18-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:13:5-65
+18-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:13:22-62
+19
+20    <uses-feature android:name="com.softbank.hardware.pepper" />
+20-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:15:5-65
+20-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:15:19-62
+21
+22    <uses-permission android:name="com.aldebaran.permission.ROBOT" />
+22-->[com.aldebaran:qisdk:1.6.7] C:\Users\20012\.gradle\caches\transforms-3\fd29cc3b449a000e41e544f4f30b9fa7\transformed\jetified-qisdk-1.6.7\AndroidManifest.xml:10:5-70
+22-->[com.aldebaran:qisdk:1.6.7] C:\Users\20012\.gradle\caches\transforms-3\fd29cc3b449a000e41e544f4f30b9fa7\transformed\jetified-qisdk-1.6.7\AndroidManifest.xml:10:22-67
+23    <uses-permission android:name="android.permission.INTERNET" />
+23-->[com.aldebaran:qisdk:1.6.7] C:\Users\20012\.gradle\caches\transforms-3\fd29cc3b449a000e41e544f4f30b9fa7\transformed\jetified-qisdk-1.6.7\AndroidManifest.xml:11:5-67
+23-->[com.aldebaran:qisdk:1.6.7] C:\Users\20012\.gradle\caches\transforms-3\fd29cc3b449a000e41e544f4f30b9fa7\transformed\jetified-qisdk-1.6.7\AndroidManifest.xml:11:22-64
+24
+25    <application
+25-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:17:5-36:19
+26        android:allowBackup="true"
+26-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:18:9-35
+27        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+27-->[androidx.core:core:1.5.0] C:\Users\20012\.gradle\caches\transforms-3\cd8703edc159af06e8bb218e16bc8156\transformed\core-1.5.0\AndroidManifest.xml:24:18-86
+28        android:debuggable="true"
+29        android:extractNativeLibs="false"
+30        android:icon="@mipmap/ic_launcher"
+30-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:19:9-43
+31        android:label="@string/app_name"
+31-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:20:9-41
+32        android:roundIcon="@mipmap/ic_launcher_round"
+32-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:21:9-54
+33        android:supportsRtl="true"
+33-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:22:9-35
+34        android:testOnly="true"
+35        android:theme="@style/Theme.DancePepper" >
+35-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:23:9-49
+36        <activity
+36-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:24:9-26:39
+37            android:name="com.ramneet.dancepepper.CameraActivity"
+37-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:25:13-43
+38            android:exported="true" />
+38-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:26:13-36
+39        <activity
+39-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:27:9-35:20
+40            android:name="com.ramneet.dancepepper.MainActivity"
+40-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:28:13-41
+41            android:exported="true" >
+41-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:29:13-36
+42            <intent-filter>
+42-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:30:13-34:29
+43                <action android:name="android.intent.action.MAIN" />
+43-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:31:17-69
+43-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:31:25-66
+44
+45                <category android:name="android.intent.category.LAUNCHER" />
+45-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:33:17-77
+45-->C:\Users\20012\Documents\Spring_2022\CMPT419\dancePepper\app\src\main\AndroidManifest.xml:33:27-74
+46            </intent-filter>
+47        </activity>
+48
+49        <meta-data
+49-->[com.google.android.gms:play-services-fitness:20.0.0] C:\Users\20012\.gradle\caches\transforms-3\b48a45b4078675e582c8e42c4e8b5e0f\transformed\jetified-play-services-fitness-20.0.0\AndroidManifest.xml:23:9-25:38
+50            android:name="com.google.gms.fitness.sdk.version"
+50-->[com.google.android.gms:play-services-fitness:20.0.0] C:\Users\20012\.gradle\caches\transforms-3\b48a45b4078675e582c8e42c4e8b5e0f\transformed\jetified-play-services-fitness-20.0.0\AndroidManifest.xml:24:13-62
+51            android:value="20.0.0" />
+51-->[com.google.android.gms:play-services-fitness:20.0.0] C:\Users\20012\.gradle\caches\transforms-3\b48a45b4078675e582c8e42c4e8b5e0f\transformed\jetified-play-services-fitness-20.0.0\AndroidManifest.xml:25:13-35
+52        <meta-data
+52-->[com.aldebaran:qisdk:1.6.7] C:\Users\20012\.gradle\caches\transforms-3\fd29cc3b449a000e41e544f4f30b9fa7\transformed\jetified-qisdk-1.6.7\AndroidManifest.xml:16:9-18:53
+53            android:name="qisdk_version"
+53-->[com.aldebaran:qisdk:1.6.7] C:\Users\20012\.gradle\caches\transforms-3\fd29cc3b449a000e41e544f4f30b9fa7\transformed\jetified-qisdk-1.6.7\AndroidManifest.xml:17:13-41
+54            android:value="@string/qisdk_version" />
+54-->[com.aldebaran:qisdk:1.6.7] C:\Users\20012\.gradle\caches\transforms-3\fd29cc3b449a000e41e544f4f30b9fa7\transformed\jetified-qisdk-1.6.7\AndroidManifest.xml:18:13-50
+55
+56        <activity
+56-->[com.google.android.gms:play-services-base:17.1.0] C:\Users\20012\.gradle\caches\transforms-3\94efd55788ef0846da2a8c734de18e41\transformed\jetified-play-services-base-17.1.0\AndroidManifest.xml:23:9-26:75
+57            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+57-->[com.google.android.gms:play-services-base:17.1.0] C:\Users\20012\.gradle\caches\transforms-3\94efd55788ef0846da2a8c734de18e41\transformed\jetified-play-services-base-17.1.0\AndroidManifest.xml:24:13-79
+58            android:exported="false"
+58-->[com.google.android.gms:play-services-base:17.1.0] C:\Users\20012\.gradle\caches\transforms-3\94efd55788ef0846da2a8c734de18e41\transformed\jetified-play-services-base-17.1.0\AndroidManifest.xml:25:13-37
+59            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+59-->[com.google.android.gms:play-services-base:17.1.0] C:\Users\20012\.gradle\caches\transforms-3\94efd55788ef0846da2a8c734de18e41\transformed\jetified-play-services-base-17.1.0\AndroidManifest.xml:26:13-72
+60
+61        <meta-data
+61-->[com.google.android.gms:play-services-basement:17.0.0] C:\Users\20012\.gradle\caches\transforms-3\bfb73c57d75e3fe0eff93a1ead39cbb9\transformed\jetified-play-services-basement-17.0.0\AndroidManifest.xml:23:9-25:69
+62            android:name="com.google.android.gms.version"
+62-->[com.google.android.gms:play-services-basement:17.0.0] C:\Users\20012\.gradle\caches\transforms-3\bfb73c57d75e3fe0eff93a1ead39cbb9\transformed\jetified-play-services-basement-17.0.0\AndroidManifest.xml:24:13-58
+63            android:value="@integer/google_play_services_version" />
+63-->[com.google.android.gms:play-services-basement:17.0.0] C:\Users\20012\.gradle\caches\transforms-3\bfb73c57d75e3fe0eff93a1ead39cbb9\transformed\jetified-play-services-basement-17.0.0\AndroidManifest.xml:25:13-66
+64    </application>
+65
+66</manifest>

@@ -98,7 +98,27 @@ Videos sent to the server will be in the uploads' folder Server/static/uploads
 
 The Classifier folder contains the Juypiter Notebook that creates the model. Move the pepper_data to the classifier folder as shown in the project structure
 
-The Augmentation folder contains the script to augment the data. Run it by asking peter looool
+The Augmentation folder contains the script to augment the data. 
+
+The source code is from https://github.com/okankop/vidaug. 
+
+It requires:
+* numpy
+* PIL
+* scipy
+* skimage
+* OpenCV
+
+all packageds/requirements can be installed with:
+```
+sudo pip install git+https://github.com/okankop/vidaughttps://github.com/okankop/vidaug
+```
+You may then run `aug_script_2.ipynb` directly through jupyter notebook.
+
+Since the videos taken from the pepper robots are gp3 and the augmentation script runs on gifs and the classification layers run with mp4, there are some scripts to convert those files such as 3pg2gif.py, gif2mp4.py as well as an upload.py to push files to github. those files can be mostly ignored. 
+
+To bypass augmentation all together and use the augementated data set generated. Visit https://github.com/ramneetbrar/pepper_data to download the files directly.
+
 ## Self Evaluation
 
 We originally wanted to make pepper animate any movement that the user could make, specifically dance moves. This turned out to be really hard, so we changed strategies and decided on making a set of 5 actions that pepper could recognize and reproduce. We wanted to create our own exciting Pepper animations, but we could not make our own due to troubles with the Pepper animation editor. The animation editor would not launch on our macs. So we adapted and chose from a list of predefined animations. We then wanted to use OpenPose on the Pepper tablet and found a similar library suited for mobile development called Tensorflow light that provides similar data we could use for our model. Unfortunately, Tensorflow light would only compile on our virtual machines and would not run on the Pepper tablet. We then opted to create a server that could receive a video file and use a model to classify the video. We now tried to use the actual OpenPose library, but we were not able to use it due to compilation errors. Moving on, we found an article describing video classification and used this to build our model. After making our model, we found it inaccurate and needed to improve it. The data was initially recorded on MacBook cameras, but it was too dissimilar to the videos recorded by the pepper tablet. Videos recorded on the Pepper tablet look upwards and have a narrow frame of view. So we then re-recorded the videos using the Pepper tablet, utilizing our app and server to download the videos. We then reduced the number of actions to 3: wave, mind blown, and blow kisses. This was to help speed up the training process and model accuracy.
@@ -108,6 +128,7 @@ Overcoming the many challenges involved in creating and using AI and robot libra
 
  - [Server Implementatoin](https://roytuts.com/upload-and-play-video-using-flask/) we followed 
  - [Classifier Implementatoin](https://learnopencv.com/introduction-to-video-classification-and-human-activity-recognition/) we followed
+
 
 
 ## Dependencies
